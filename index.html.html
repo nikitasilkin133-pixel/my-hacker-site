@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Hacker Matrix Project</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: black;
+            /* В папке файл называется cursor.jpg */
+            cursor: url('cursor.jpg'), auto;
+        }
+
+        #matrix { display: block; }
+
+        #start-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border: 2px solid #0f0;
+        }
+
+        button {
+            background: #000;
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 15px 30px;
+            font-size: 20px;
+            font-family: monospace;
+            cursor: pointer;
+        }
+
+        .spam-image {
+            position: absolute;
+            z-index: 5;
+            width: 150px;
+            pointer-events: none;
+        }
+
+        #hacker-text {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #0f0;
+            font-family: monospace;
+            font-size: 24px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="start-box">
+        <h1 style="color: #0f0; font-family: monospace;">СИСТЕМА ГОТОВА</h1>
+        <button id="btn-start">АКТИВИРОВАТЬ</button>
+    </div>
+
+    <div id="hacker-text"></div>
+    <canvas id="matrix"></canvas>
+    <div id="spam-zone"></div>
+
+    <audio id="hacker-audio" loop>
+        <source src="sound.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        const audio = document.getElementById('hacker-audio');
+        const startBox = document.getElementById('start-box');
+        const btn = document.getElementById('btn-start');
+        const spamZone = document.getElementById('spam-zone');
+        const hackerText = document.getElementById('hacker-text');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function draw() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#0f0";
+            ctx.font = fontSize + "px monospace";
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+
+        function spawnSpam() {
+            const img = document.createElement('img');
+            // В папке файл называется image, добавим .jpg для верности
+            img.src = 'image.jpg'; 
+            img.className = 'spam-image';
+            img.style.left = Math.random() * (window.innerWidth - 150) + 'px';
+            img.style.top = Math.random() * (window.innerHeight - 150) + 'px';
+            spamZone.appendChild(img);
+        }
+
+        btn.addEventListener('click', () => {
+            audio.play().catch(e => console.log("Ошибка звука:", e));
+            startBox.style.display = 'none';
+            hackerText.innerText = "СИСТЕМА ВЗЛОМАНА... КУЛЬТ БЛИНЧИКА АКТИВИРОВАН!";
+            setInterval(draw, 33);
+            setInterval(spawnSpam, 200);
+        });
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
